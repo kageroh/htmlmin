@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<job>
+
+<object id="stream" progid="ADODB.Stream" />
+<reference object="ADODB.Stream" />
+<script language="JScript"><![CDATA[
+	function adoLoadText(filename, charset) {
+		stream.type = adTypeText;
+		stream.charset = charset;
+		stream.open();
+		stream.loadFromFile(filename);
+		var text = stream.readText();
+		stream.close();
+		return text;
+	}
+	function adoSaveText(filename, text, charset) {
+		stream.type = adTypeText;
+		stream.charset = charset;
+		stream.open();
+		stream.writeText(text);
+		stream.saveToFile(filename, adSaveCreateOverWrite);
+		stream.close();
+	}
+]]></script>
+
+<script language="JScript" src="htmlmin.js"></script>
+
+<script language="JScript"><![CDATA[
+(function() {
+	var text = adoLoadText(WSH.arguments(1), WSH.arguments(0));
+
+	var hm = htmlmin();
+	hm.sTag = [];
+	Array.prototype.push.apply(hm.eTag, [
+		'area',
+		'base',
+		'basefont',
+		'br',
+		'col',
+		'frame',
+		'hr',
+		'img',
+		'input',
+		'link',
+		'meta',
+		'nextid',
+		'param'
+		]);
+	text = hm.minify(text);
+
+	adoSaveText(WSH.arguments(2), text, WSH.arguments(0));
+})();
+]]></script>
+</job>
